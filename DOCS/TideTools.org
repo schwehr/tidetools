@@ -1,0 +1,74 @@
+#+TITLE: Tide Tools 
+
+* Overview
+The CCOM Tide Tools is a collection of utilities for processing the data that is recorded by our tide guages. The tools are scripts written in Python. They can easily be converted to Perl and Matlab.
+
+The design is for a data flow, from raw data captured at the tide station to input suitable for Caris and tide predictions based both on range and offset from a primary station, and tidal constituents derived from the data.
+
+The diagram on the right shows how the data flows.
+
+The Tide Tools are not yet complete. You are welcome to contribute to the project.
+
+
+*  The Process Flow
+
+    A typical flow of data through these tools would be:
+
+1.    tideConvert - to generate water level in a standard format from recorded data
+2.    tidePlot - to visually check the result and see any significant data gaps
+3.    tideTrim - to remove outliers
+4.    tidePlot - to visually check the result of the tideTrim
+5.    tideResample - fill in gaps before smoothing (or down sample)
+6.    tidePlot - check again
+7.    tideFilter - low pass filter for smoothing
+8.    tidePeaks - analysis for offsets and scale
+9.    tidePlot - inspect the results against any of the previous steps 
+
+
+*  The Tools
+**  Tide Conversion
+
+   The tideConvert serves one purpose: convert the raw water pressure data and time to water depth and formatted time
+**  Tide Plotter
+
+    The tidePlot can be used to visualize the data at any stage. It can compare tidal data that shares the same time base. This is particularly important when checking the results of interpolation or filtering.
+**  Tide Trimmer
+
+    The tideTrim program serves two purposes:
+
+   1. limit the data set to specified time span (bandpass on the Time axis)
+   2. delete outliers (statistical bandpass on the depth values) 
+
+**  Tide Smoother
+
+    The tideFilter is is a lowpass filter. It is used to smooth the steps and ripples of raw data so that peaks can be more easily found.
+
+**  Tide Resampler 
+
+    tideResample uses least squares linear regression and interpolation to reposition the sample times.
+**  Tide Peaks
+
+    The tidePeaks program selects the time and tidal heights of the maximums and minimums from a set of clean, continuous data. This is particularly valuable in determining tidal offsets.
+
+
+* tideConvert.py
+#+INCLUDE: './tideConvert.org'
+
+* tidePlot.py
+#+INCLUDE: './tideConvert.org'
+
+* tideTrim.py
+#+INCLUDE: './tideConvert.org'
+
+* tideFilter.py
+#+INCLUDE: './tideConvert.org'
+
+* tideResample.py
+#+INCLUDE: './tideConvert.org'
+
+* tidePeaks.py
+#+INCLUDE: './tideConvert.org'
+
+* tideLib.py
+#+INCLUDE: './tideConvert.org'
+
