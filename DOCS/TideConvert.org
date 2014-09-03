@@ -122,115 +122,37 @@ Time   BattVolt Ch002    Ch003
 2007/06/01 00:42:00    1.62
 
 *  Command Line Options and Arguments
+#+BEGIN_SRC sh
+Usage: tideConvert.py [options] tide files
 
-Short
-	
-
-Long
-	
-
-Type
-	
-
-Description
-
-=-i=
-	
-
-=--input-files=
-	
-
-=[path/]filename=
-	
-
-Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input.
-
--I
-	
-
---InputFormat
-	
-
-    SNTT
-    DTWL
-    TVWL
-
-	
-
-The options are:
-
-SNTT
-    Raw Data 
-DTWL
-    DateTime WaterLevel 
-TVWL
-    Time WaterLevel 
-
--o
-	
-
---output-file
-	
-
-[path/]filename
-	
-
-Where to place the output. STDOUT is used if no output-file is specified.
-
--t
-	
-
---timeshift
-	
-
-Seconds
-	
-
-Data before 2008-06-15 from Castine needs to be shifted +/- 45 seconds
-
--v
-	
-
---verbose
-	
-
-
-	
-
-Run with status output to stderr
-
--f
-	
-
---format-time
-	
-
-    caris
-    matlab
-    UNIXepoch
-
-	
-
-time format for output
-
-    caris
-    	
-
-    YY/mm/dd HH:MM:SS.sss
-
-    matlab
-    	
-
-    YY mm dd HH MM SS.sss
-
-    UNIXepoch
-    	
-
-    SSSSSSSS.ss
-
-
-
--D
-	
-
---datum-offset
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -i INPUTFILES, --input-files=INPUTFILES
+                        What files to read from [default: [] - stdin if None]
+  -I INPUTFORMAT, --InputFormat=INPUTFORMAT
+                        Input time format. One of: CDL, SNTT, DTWL, TVWL
+                        [default: SNTT]
+  -o OUTFILENAME, --output-file=OUTFILENAME
+                        What filename to write to [default: none - stdout if
+                        None]
+  -O TIMEFORMAT, --OutputFormat=TIMEFORMAT
+                        Output time format. One of: caris, matlab, UNIXepoch
+                        [default: caris]
+  -B BADLINEFILE, --BadLineFile=BADLINEFILE
+                        Place unparseable lines in a file for review [default:
+                        None]
+  -t TIMESHIFT, --timeshift=TIMESHIFT
+                        in seconds.  You will need to shift time for data from
+                        2008-06-15 and older by +/- 45 seconds [default: 0]
+  -v, --verbose         run the tests run in verbose mode
+  -D DATUMOFFSET, --datum-offset=DATUMOFFSET
+                        Distance from the sensor up to the datum offset in
+                        meters (negative is below the sensor) [default: 0]
+  --FieldSeparator=FIELDSEP
+                        the character(s) used to separate fields in files;
+                        [default '\t']
+  --RecordSeparator=RECSEP
+                        the character(s) used to separate records in the
+                        files; [default '\n']
+#+END_SRC

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>tideConvert</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="title" content="tideConvert"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2014-09-03T13:10-0400"/>
+<meta name="author" content="Capt. Ben Smith"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">tideConvert</h1>
+
+<p>The program tideConvert takes Anderra tide gauge data in several different formats and produces a Date Time WaterLevel record for every valid data line in the Anderra log.
+</p>
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Algorithm</a></li>
+<li><a href="#sec-2">2 Input Formats</a></li>
+<li><a href="#sec-3">3 Raw Input</a></li>
+<li><a href="#sec-4">4 Date-Time WaterLevel</a></li>
+<li><a href="#sec-5">5 Time WaterLevel Temperature</a></li>
+<li><a href="#sec-6">6 Typical Output (caris time format)</a></li>
+<li><a href="#sec-7">7 Command Line Options and Arguments</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Algorithm</h2>
+<div class="outline-text-2" id="text-1">
+
+
+<p>
+The conversion from the tide guage formats (there are many different ones) is not a simple process because it relies on pattern recognition via the software tool "regular expressions". However, once the patterns are recognized and the values are converted from strings of digits to numeric values, the data conversion and reformating is fairly straight forward.
+</p>
+<p>
+If the recorded data is raw pressure, we use the formula:
+</p>
+<p>
+TideConvert formula.gif
+</p>
+<p>
+WL
+</p>
+
+<p>
+water level in meters
+</p>
+<p>
+N
+</p>
+
+<p>
+raw pressure in kPa
+</p>
+<p>
+A
+</p>
+
+<p>
+-1.008e-01
+</p>
+<p>
+B
+</p>
+
+<p>
+5.125e-03
+</p>
+<p>
+C
+</p>
+
+<p>
+7.402e-08
+</p>
+<p>
+D
+</p>
+
+<p>
+0.000
+</p>
+<p>
+datumOffset
+</p>
+
+<p>
+meters below datum
+</p></div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Input Formats</h2>
+<div class="outline-text-2" id="text-2">
+
+
+<p>
+The input formats are selected with the -I. The choices are:
+</p>
+<p>
+SNTT 
+    Raw Input 
+DTWL 
+    Date-Time WaterLevel 
+TVWL 
+    Time WaterLevel Temperature (JEL tide gauge) 
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Raw Input</h2>
+<div class="outline-text-2" id="text-3">
+
+
+<p>
+A raw data format consists of a timestamp, pressure, and temperature. For example:
+</p>
+<p>
+635  711  427,rmemma,1213488014.57
+635  711  427,rmemma,1213488026.7
+635  711  427,rmemma,1213488038.83
+635  712  427,rmemma,1213488050.95
+635  712  426,rmemma,1213488063.08
+635  712  426,rmemma,1213488075.21
+635  712  426,rmemma,1213488087.33
+</p>
+<p>
+time, pressure, and temperature are converted to time, water<sub>level</sub>.
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Date-Time WaterLevel</h2>
+<div class="outline-text-2" id="text-4">
+
+
+<p>
+Select this format with the -I DTWL option.
+</p>
+<p>
+The format looks like this:
+</p>
+<p>
+&lt;code lang=text&gt;
+2007/06/01 00:00:00    1.18   0.008
+2007/06/01 00:06:00    1.23   0.007
+2007/06/01 00:12:00    1.28   0.007
+2007/06/01 00:18:00    1.34   0.009
+2007/06/01 00:24:00    1.41   0.009
+</p>
+<p>
+&lt;/code&gt;
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Time WaterLevel Temperature</h2>
+<div class="outline-text-2" id="text-5">
+
+
+<p>
+This is the format used at the JEL tide gauge during the summer of 2009
+</p>
+<p>
+Select this format with the -I TVWL option.
+</p>
+<p>
+This format has the date only at the begining of each day. Each reading then shows the time (without the date). The format looks like this:
+</p>
+<p>
+&lt;code lang=text&gt;
+Time/Date :   8 July-2009 16:53:00
+Time   BattVolt Ch002    Ch003    
+16:53     10.2    377.0    576.0  
+16:53     10.2    377.0    576.0  
+16:54     10.2    378.0    576.0  
+16:54     10.2    378.0    576.0  
+</p>
+<p>
+&lt;/code&gt;
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Typical Output (caris time format)</h2>
+<div class="outline-text-2" id="text-6">
+
+
+<p>
+2007/06/01 00:00:00    1.18 
+2007/06/01 00:06:00    1.23 
+2007/06/01 00:12:00    1.28 
+2007/06/01 00:18:00    1.34 
+2007/06/01 00:24:00    1.41 
+2007/06/01 00:30:00    1.48 
+2007/06/01 00:36:00    1.55
+2007/06/01 00:42:00    1.62
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Command Line Options and Arguments</h2>
+<div class="outline-text-2" id="text-7">
+
+
+
+
+<pre class="example">Usage: tideConvert.py [options] tide files
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -i INPUTFILES, --input-files=INPUTFILES
+                        What files to read from [default: [] - stdin if None]
+  -I INPUTFORMAT, --InputFormat=INPUTFORMAT
+                        Input time format. One of: CDL, SNTT, DTWL, TVWL
+                        [default: SNTT]
+  -o OUTFILENAME, --output-file=OUTFILENAME
+                        What filename to write to [default: none - stdout if
+                        None]
+  -O TIMEFORMAT, --OutputFormat=TIMEFORMAT
+                        Output time format. One of: caris, matlab, UNIXepoch
+                        [default: caris]
+  -B BADLINEFILE, --BadLineFile=BADLINEFILE
+                        Place unparseable lines in a file for review [default:
+                        None]
+  -t TIMESHIFT, --timeshift=TIMESHIFT
+                        in seconds.  You will need to shift time for data from
+                        2008-06-15 and older by +/- 45 seconds [default: 0]
+  -v, --verbose         run the tests run in verbose mode
+  -D DATUMOFFSET, --datum-offset=DATUMOFFSET
+                        Distance from the sensor up to the datum offset in
+                        meters (negative is below the sensor) [default: 0]
+  --FieldSeparator=FIELDSEP
+                        the character(s) used to separate fields in files;
+                        [default '\t']
+  --RecordSeparator=RECSEP
+                        the character(s) used to separate records in the
+                        files; [default '\n']
+</pre>
+
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2014-09-03T13:10-0400</p>
+<p class="author">Author: Capt. Ben Smith</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.3f with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>
