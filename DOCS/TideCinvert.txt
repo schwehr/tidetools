@@ -1,0 +1,298 @@
+ tideConvert
+
+The program tideConvert takes Anderra tide gauge data in several different formats and produces a Date Time WaterLevel record for every valid data line in the Anderra log.
+[edit] The Tools
+
+    tideConvert - to generate water level in a standard format from recorded data
+    tidePlot - to visually check the result and see any significant data gaps
+    tideTrim - to remove outliers
+    tideFilter - to smooth the data
+    tidePeaks - analysis for offsets and scale
+    tideResample - interpolates and downsamples (under development and testing) 
+
+[edit] Algorithm
+
+The conversion from the tide guage formats (there are many different ones) is not a simple process because it relies on pattern recognition via the software tool "regular expressions". However, once the patterns are recognized and the values are converted from strings of digits to numeric values, the data conversion and reformating is fairly straight forward.
+
+If the recorded data is raw pressure, we use the formula:
+
+TideConvert formula.gif
+
+WL
+	
+
+water level in meters
+
+N
+	
+
+raw pressure in kPa
+
+A
+	
+
+-1.008e-01
+
+B
+	
+
+5.125e-03
+
+C
+	
+
+7.402e-08
+
+D
+	
+
+0.000
+
+datumOffset
+	
+
+meters below datum
+[edit] Input Formats
+
+The input formats are selected with the -I. The choices are:
+
+SNTT 
+    Raw Input 
+DTWL 
+    Date-Time WaterLevel 
+TVWL 
+    Time WaterLevel Temperature (JEL tide gauge) 
+
+[edit] Raw Input
+
+A raw data format consists of a timestamp, pressure, and temperature. For example:
+
+# START LOGGING UTC seconds since the epoch: 1213488002.45
+# SPEED:       9600
+# PORT:        /dev/ttyS0
+# TIMEOUT:     300.0
+# STATIONID:   memma
+# DAEMON MODE: True
+635  711  427,rmemma,1213488014.57
+635  711  427,rmemma,1213488026.7
+635  711  427,rmemma,1213488038.83
+635  712  427,rmemma,1213488050.95
+635  712  426,rmemma,1213488063.08
+635  712  426,rmemma,1213488075.21
+635  712  426,rmemma,1213488087.33
+
+time, pressure, and temperature are converted to time, water_level.
+
+
+[edit] Date-Time WaterLevel
+
+Select this format with the -I DTWL option.
+
+The format looks like this:
+
+<code lang=text>
+2007/06/01 00:00:00    1.18   0.008
+2007/06/01 00:06:00    1.23   0.007
+2007/06/01 00:12:00    1.28   0.007
+2007/06/01 00:18:00    1.34   0.009
+2007/06/01 00:24:00    1.41   0.009
+
+</code>
+
+[edit] Time WaterLevel Temperature
+
+This is the format used at the JEL tide gauge during the summer of 2009
+
+Select this format with the -I TVWL option.
+
+This format has the date only at the begining of each day. Each reading then shows the time (without the date). The format looks like this:
+
+<code lang=text>
+Time/Date :   8 July-2009 16:53:00
+Time   BattVolt Ch002    Ch003    
+16:53     10.2    377.0    576.0  
+16:53     10.2    377.0    576.0  
+16:54     10.2    378.0    576.0  
+16:54     10.2    378.0    576.0  
+
+</code>
+
+
+[edit] Typical Output (caris time format)
+
+2007/06/01 00:00:00    1.18 
+2007/06/01 00:06:00    1.23 
+2007/06/01 00:12:00    1.28 
+2007/06/01 00:18:00    1.34 
+2007/06/01 00:24:00    1.41 
+2007/06/01 00:30:00    1.48 
+2007/06/01 00:36:00    1.55
+2007/06/01 00:42:00    1.62
+
+[edit] Command Line Options and Arguments
+
+Short
+	
+
+Long
+	
+
+Type
+	
+
+Description
+
+-i
+	
+
+--input-files
+	
+
+[path/]filename
+	
+
+Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input.
+
+-I
+	
+
+--InputFormat
+	
+
+    SNTT
+    DTWL
+    TVWL
+
+	
+
+The options are:
+
+SNTT
+    Raw Data 
+DTWL
+    DateTime WaterLevel 
+TVWL
+    Time WaterLevel 
+
+-o
+	
+
+--output-file
+	
+
+[path/]filename
+	
+
+Where to place the output. STDOUT is used if no output-file is specified.
+
+-t
+	
+
+--timeshift
+	
+
+Seconds
+	
+
+Data before 2008-06-15 from Castine needs to be shifted +/- 45 seconds
+
+-v
+	
+
+--verbose
+	
+
+
+	
+
+Run with status output to stderr
+
+-f
+	
+
+--format-time
+	
+
+    caris
+    matlab
+    UNIXepoch
+
+	
+
+time format for output
+
+    caris
+    	
+
+    YY/mm/dd HH:MM:SS.sss
+
+    matlab
+    	
+
+    YY mm dd HH MM SS.sss
+
+    UNIXepoch
+    	
+
+    SSSSSSSS.ss
+
+
+
+-D
+	
+
+--datum-offset
+	
+
+
+
+	
+
+
+
+
+
+	
+
+
+
+	
+
+
+
+	
+
+
+
+    Ben
+    My talk
+    My preferences
+    My watchlist
+    My contributions
+    Log out
+
+    Page
+    Discussion
+
+    Read
+    Edit
+    View history
+
+Navigation
+
+    Main page
+    Community portal
+    Current events
+    Recent changes
+    Random page
+    Help
+
+Toolbox
+
+    What links here
+    Related changes
+    Upload file
+    Special pages
+    Printable version
+    Permanent link
+

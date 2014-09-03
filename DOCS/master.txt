@@ -1,0 +1,68 @@
+The CCOM Tide Tools is a collection of utilities for processing the data that is recorded by our tide guages. The tools are scripts written in Python. They can easily be converted to Perl and Matlab.
+
+The design is for a data flow, from raw data captured at the tide station to input suitable for Caris and tide predictions based both on range and offset from a primary station, and tidal constituents derived from the data.
+
+The diagram on the right shows how the data flows.
+
+The Tide Tools are not yet complete. You are welcome to contribute to the project.
+Contents
+ [hide] 
+
+    1 The Process
+    2 The Tools
+        2.1 Tide Conversion
+        2.2 Tide Plotter
+        2.3 Tide Trimmer
+        2.4 Tide Smoother
+        2.5 Tide Resampler (replaces tideInterp and tideDownsample)
+        2.6 Tide Peaks
+    3 Deprecated Tools
+        3.1 Tide Interpolator (deprecated for tideResample)
+        3.2 Tide Down sampler (deprecated for tideResample)
+
+[edit] The Process
+
+A typical flow of data through these tools would be:
+
+    tideConvert - to generate water level in a standard format from recorded data
+    tidePlot - to visually check the result and see any significant data gaps
+    tideTrim - to remove outliers
+    tidePlot - to visually check the result of the tideTrim
+    tideResample - fill in gaps before smoothing (or down sample)
+    tidePlot - check again
+    tideFilter - low pass filter for smoothing
+    tidePeaks - analysis for offsets and scale
+    tidePlot - inspect the results against any of the previous steps 
+
+[edit] The Tools
+[edit] Tide Conversion
+
+The tideConvert serves one purpose: convert the raw water pressure data and time to water depth and formatted time
+[edit] Tide Plotter
+
+The tidePlot can be used to visualize the data at any stage. It can compare tidal data that shares the same time base. This is particularly important when checking the results of interpolation or filtering.
+[edit] Tide Trimmer
+
+The tideTrim program serves two purposes:
+
+    limit the data set to specified time span (bandpass on the Time axis)
+    delete outliers (statistical bandpass on the depth values) 
+
+[edit] Tide Smoother
+
+The tideFilter is is a lowpass filter. It is used to smooth the steps and ripples of raw data so that peaks can be more easily found.
+[edit] Tide Resampler (replaces tideInterp and tideDownsample)
+
+tideResample uses least squares linear regression and interpolation to reposition the sample times.
+[edit] Tide Peaks
+
+The tidePeaks program selects the time and tidal heights of the maximums and minimums from a set of clean, continuous data. This is particularly valuable in determining tidal offsets.
+[edit] Deprecated Tools
+[edit] Tide Interpolator (deprecated for tideResample)
+
+The tideInterp program fills the gaps in the tide data set that might be caused by short data logging outages and be data cleaning by tideTrim
+[edit] Tide Down sampler (deprecated for tideResample)
+
+tideDownsample is used to align and resample data from a higher time resolution to a lower one. It uses an interpolation method to align the data with a prescribed time start point and interval.
+
+
