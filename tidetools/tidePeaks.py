@@ -1,16 +1,6 @@
 #!/usr/bin/env python
-'''
-__author__    = 'Ben Smith'
-__version__   = '$Revision: 9665 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-06-19 08:23:00 -0700 (Thu, 19 Jun 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-__contact__   = 'ben at maperl dot com'
-__doc__ ='''
+"""TODO: Describe module."""
 
-
-################# Libs
 import time
 import datetime
 import os
@@ -18,7 +8,6 @@ import sys
 from numpy import *
 from tideLib import *
 from optparse import OptionParser
-
 
 
 def CommandLine():
@@ -29,8 +18,8 @@ def CommandLine():
     global options,args
 
     p = OptionParser()
-    p.add_option("-i", "--inputFiles", 
-                 type="string", 
+    p.add_option("-i", "--inputFiles",
+                 type="string",
                  dest="inputFiles",
                  action="append",
                  default=[],
@@ -43,7 +32,7 @@ def CommandLine():
                       ,choices=timeTypes
                       ,help= 'Input time format. One of ' + \
                           ', '.join(timeTypes)+ ' [default: %default] ')
-    p.add_option("-o", "--outputFile", 
+    p.add_option("-o", "--outputFile",
                  default = None,
                  type="string", dest="outputFile",
                  help="the file to write to (overwrites)",
@@ -55,11 +44,11 @@ def CommandLine():
                       ,choices=timeTypes
                       ,help= 'Output time format. One of ' + \
                           ', '.join(timeTypes)+ ' [default: %default] ')
-    p.add_option("-l", "--label", 
+    p.add_option("-l", "--label",
                  default = None,
                  type="string", dest="label",
                  help="the label (station ID) to add to each output line")
-    p.add_option("-w", "--window", 
+    p.add_option("-w", "--window",
                  default = '01:00:00',
                  type="string", dest="windowTstr",
                  help="the time window in which to find peak values. \
@@ -87,31 +76,26 @@ Format is 'HH:MM:SS'.")
     p.add_option("--RecordSeperator", default = '\n',
                  type="string", dest="recSep",
                  help="the character(s) used to separate records in the output; [default '\n']")
-        
 
-    
+
+
     (options,args) = p.parse_args()
     (hStr,mStr,sStr) = options.windowTstr.split(':')
-    options.window = float(60*60*int(hStr) + 
+    options.window = float(60*60*int(hStr) +
                            60*int(mStr) +
                            int(sStr))
 
     return(p)
 
-######################### main ##########################################
-
 def main():
-
     global options, args
-
     global inF, outF , errF
 
-    
     errF = sys.stderr
 
     p = CommandLine()
 
-    # open output 
+    # open output
     if(options.outputFile != None):
         outF = open(options.outputFile,"w")
     else:
@@ -157,7 +141,7 @@ class Peaks():
         self.outputFormat = outputFormat
         self.windowTwidth = window
         self.dataWindow = self.Window(self.windowTwidth)
-        
+
     ######### subclass Window ####################
 
     class Window():
@@ -195,7 +179,7 @@ class Peaks():
 #            print (self.queue[center][0] == dt),
 #            print "critical time: ",dt,'   center',self.queue[center][0]
             return (self.queue[center][0] >= dt)
-            
+
         def max(self):
             '''
             return the datetime and value with the maximum value
@@ -204,7 +188,7 @@ class Peaks():
             maxValue = -100000.0
             maxTime = None
             for entry in self.queue:
-                if entry[1] > maxValue: 
+                if entry[1] > maxValue:
                     maxTime = entry[0]
                     maxValue = entry[1]
             return (maxTime,maxValue)
@@ -218,7 +202,7 @@ class Peaks():
             minTime = None
 
             for entry in self.queue:
-                if entry[1] < minValue: 
+                if entry[1] < minValue:
                     minTime = entry[0]
                     minValue = entry[1]
 
@@ -247,7 +231,7 @@ class Peaks():
 
         for line in inF:
             line.strip()
-        
+
             if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
                  continue # not a data record line
 
@@ -274,10 +258,10 @@ class Peaks():
                 criticalDT = thisTime
                 if options.debug > 0:
                     print "Low Critical ",criticalDT, WL
-            
+
             # if critical point is in center of window,
             #  evaluate and output
-            if (criticalDT != None and 
+            if (criticalDT != None and
                 self.dataWindow.isCentered(criticalDT)):
                 if peakType == 'H':
                     (dt,value) = self.dataWindow.max()
@@ -293,14 +277,11 @@ class Peaks():
                                recSep=options.recSep)
                 criticalDT = None
 
-            lastTime = thisTime 
+            lastTime = thisTime
             lastWL = WL
             lastTrend = thisTrend
 
 
-######################################################################
-# Code that runs when this file is executed directly
-######################################################################
 if __name__ == '__main__':
     main()
 

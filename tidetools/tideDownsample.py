@@ -1,24 +1,15 @@
 #!/usr/bin/env python
-'''
-__author__    = 'Ben Smith'
-__version__   = '$Revision: 9665 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-06-19 08:23:00 -0700 (Thu, 19 Jun 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-__contact__   = 'ben at ccom.unh.edu'
-__doc__ ='''
+"""TODO: Describe module."""
 
-
-################# Libs
 import time
 import datetime
+from optparse import OptionParser
 import os
+import string
 import sys
+
 import numpy as np
 from tideLib import *
-from optparse import OptionParser
-
 
 
 def CommandLine():
@@ -29,8 +20,8 @@ def CommandLine():
     global options,args
 
     p = OptionParser()
-    p.add_option("-i", "--inputFiles", 
-                 type="string", 
+    p.add_option("-i", "--inputFiles",
+                 type="string",
                  dest="inputFiles",
                  action="append",
                  default=[],
@@ -43,7 +34,7 @@ def CommandLine():
                       ,choices=timeTypes
                       ,help= 'Input time format. One of ' + \
                           ', '.join(timeTypes)+ ' [default: %default] ')
-    p.add_option("-o", "--outputFile", 
+    p.add_option("-o", "--outputFile",
                  default = None,
                  type="string", dest="outputFile",
                  help="the file to write to (overwrites)",
@@ -60,7 +51,7 @@ def CommandLine():
                  help='''HH:MM:SS for start time of resample''')
     p.add_option("-T", "--Tinterval", type="string", default='00:06:00',
                  dest="interval",
-                 help='''HH:MM:SS for resampling interval. 
+                 help='''HH:MM:SS for resampling interval.
 (Fractional seconds are not supported.)''')
     p.add_option("-X", "--debug", type="int", default=0,
                  dest="debug",
@@ -74,9 +65,9 @@ def CommandLine():
     p.add_option("--RecordSeperator", default = '\n',
                  type="string", dest="recSep",
                  help="the character(s) used to separate records in the output; [default '\n']")
-        
-        
-        
+
+
+
 
     (options,args) = p.parse_args()
 
@@ -90,7 +81,7 @@ def main():
 
     global inF, outF , errF
 
-    
+
     errF = sys.stderr
     p = CommandLine()
 
@@ -100,7 +91,7 @@ def main():
                     ,interval=options.interval)
 
 
-    # open output 
+    # open output
     if(options.outputFile != None):
         outF = open(options.outputFile,"w")
     else:
@@ -118,15 +109,8 @@ def main():
     outF.close()
 
 
-########################### Resampler #############################
 class Resampler():
 
-    import time
-    import datetime
-    import string
-    import numpy as np
-
-###
     def __init__(self,
                  iTformat='caris',
                  oTformat='caris',
@@ -147,11 +131,11 @@ class Resampler():
 
         self.halfTinterval = datetime.timedelta(seconds = (intervalSecs / 2.0))
         self.startTD = None
-        
+
         # the data and time sample window
         self.reset()
-        self.current = np.array([]) # row: DTtime, epochTime, value 
-###
+        self.current = np.array([]) # row: DTtime, epochTime, value
+
     def timeStr2seconds(self,timeStr):
         '''
         parses the timeStr (format HH:MM:SS) and
@@ -159,20 +143,18 @@ class Resampler():
         '''
         (hours,minutes,seconds) = string.split(timeStr,sep=':')
         return (60.*60.* float(hours) + 60. * float(minutes) + float(seconds))
-###
+
     def datetime2epoch(self,dt):
         '''
         converts a datetime object into epoch time
         '''
         return time.mktime(dt.timetuple())
-###
+
     def epoch2datetime(et):
         '''
         converts epoch time to a datetime object
         '''
         return datetime.datetime.utcfromtimestamp(et)
-
-###
 
     def process(self,infile,outfile):
         '''
@@ -187,7 +169,7 @@ class Resampler():
         # the big loop through the data
         for line in inF:
             line.strip()
-        
+
             if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
                  continue # not a data record line
 
@@ -223,17 +205,15 @@ class Resampler():
 
             self.windowPush() # add the current data to the window
 
-###
     def outputDateTime(self,dt):
         '''
         determines which outputDateTime should be associated
         with the given datetime
         '''
-        hms = datetime.timedelta(seconds=(dt.second 
+        hms = datetime.timedelta(seconds=(dt.second
                                           + dt.minute * 60
                                           + dt.hour * 60 * 60),
                                  microseconds=(dt.microsecond))
-
 
         # find next output time which should be one earlier than
         # when outTimeList[n] < hms
@@ -242,14 +222,13 @@ class Resampler():
             if(nextOt > hms): break
             n += 1
 
-        # combine time.date ..
+        # Combine time.date.
         outputDate = datetime.datetime(year=dt.year,
                                        month=dt.month,
                                        day= dt.day)
-        # .. with the previous outTimeList entry
+        # With the previous outTimeList entry
         return(outputDate + self.outTimeList[n-1])
 
-###
     def windowPush(self):
         '''
         pushes the current time/data set onto the queue
@@ -258,7 +237,7 @@ class Resampler():
             self.window = np.array([self.current])
         else:
             self.window = np.vstack((self.window,self.current))
-###
+
     def threshold(self):
         '''
         window first time (in seconds) + the interval
@@ -268,7 +247,6 @@ class Resampler():
         else:
             return self.interval.Secs
 
-###
     def align(self,time):
         '''
         using the line equation from a least squares fit to the
@@ -276,7 +254,7 @@ class Resampler():
         estimated. output is the time prescribed and the estimated
         value. (Epoch time is used in the fit and the solution.)
         '''
-        
+
         if len(self.window) == 0: return (None,None)
 
         times = list(self.window[:,1])
@@ -289,20 +267,13 @@ class Resampler():
             value = m * epochT + b
         return(time,value)
 
-###
     def reset(self):
-        ''' 
+        '''
         clears the window of data
         '''
         self.window = np.array([])
 
 
-
-        
-
-######################################################################
-# Code that runs when this file is executed directly
-######################################################################
 if __name__ == '__main__':
     main()
 

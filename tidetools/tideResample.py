@@ -1,16 +1,6 @@
 #!/usr/bin/env python
-'''
-__author__    = 'Ben Smith'
-__version__   = '$Revision: 9665 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-06-19 08:23:00 -0700 (Thu, 19 Jun 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-__contact__   = 'ben at ccom.unh.edu'
-__doc__ ='''
+"""TODO: Describe module."""
 
-
-################# Libs
 import time
 import datetime
 import os
@@ -18,7 +8,6 @@ import sys
 import numpy as np
 from tideLib import *
 from optparse import OptionParser
-
 
 
 def CommandLine():
@@ -30,23 +19,23 @@ def CommandLine():
 
     p = OptionParser()
 
-    p.add_option("-i", "--inputFiles", 
-                 type="string", 
+    p.add_option("-i", "--inputFiles",
+                 type="string",
                  dest="inputFiles",
                  action="append",
                  default=[],
                  help="the files to read",
                  metavar="FILE")
-   
+
     p.add_option('-I','--InputFormat'
                       ,dest='timeFormat'
                       ,type='choice'
                       ,default='caris'
                       ,choices=timeTypes
                       ,help= 'Output time format. One of ' + \
-                          ', '.join(timeTypes)+ ' [default: %default] ')    
+                          ', '.join(timeTypes)+ ' [default: %default] ')
 
-    p.add_option("-o", "--outputFile", 
+    p.add_option("-o", "--outputFile",
                  default = None,
                  type="string", dest="outputFile",
                  help="the file to write to (overwrites)",
@@ -59,20 +48,20 @@ def CommandLine():
                  ,choices=timeTypes
                  ,help= 'Output time format. One of ' +\
                      ', '.join(timeTypes)+ ' [default: %default] ')
-    
-    p.add_option("-T", "--Tinterval", 
-                 type="string", 
+
+    p.add_option("-T", "--Tinterval",
+                 type="string",
                  default=None,
                  dest="interval",
-                 help='''HH:MM:SS for sampling interval. 
+                 help='''HH:MM:SS for sampling interval.
 Sampling intervals greater than the input interval mode result in
-realignment. (See the --StartTime option). Sampling intervals less 
+realignment. (See the --StartTime option). Sampling intervals less
 than or equal the input interval mode result in simple straight-line
 interpolation. If no sampling interval is specified, the input interval mode
 is used by default.''')
 
-    p.add_option("-S", "--StartTime", 
-                 type="string", 
+    p.add_option("-S", "--StartTime",
+                 type="string",
                  default='00:00:00',
                  dest="startTime",
                  help='''HH:MM:SS for start time of resample''')
@@ -89,19 +78,19 @@ is used by default.''')
                  dest="maxSamples",
                  help='''the maximum number of entries to sample
 to determine the modal time interval''')
-    p.add_option("-L", "--LeastSquaresAverage", 
-                 action="store_true", 
+    p.add_option("-L", "--LeastSquaresAverage",
+                 action="store_true",
                  default=False,
                  dest="lsa",
                  help="Use least squares averaging instead of simple averaging")
-    p.add_option("-X", "--debug", 
-                 type="int", 
+    p.add_option("-X", "--debug",
+                 type="int",
                  default=0,
                  dest="debug",
                  help="debug level: 0 is off; powers of 2 for levels")
 
-    p.add_option("-v", "--verbose", 
-                 action="store_true", 
+    p.add_option("-v", "--verbose",
+                 action="store_true",
                  default=False,
                  dest="verbose",
                  help="")
@@ -114,24 +103,23 @@ to determine the modal time interval''')
                       ,help= 'One of ' + \
                           ', '.join(timeTypes)+ ' [default: %default] ')
 
-    p.add_option("--FieldSeperator", 
+    p.add_option("--FieldSeperator",
                  default = '\t',
-                 type="string", 
+                 type="string",
                  dest="fieldSep",
                  help="the character(s) used to separate fields in the output; [default '\t']")
 
-    p.add_option("--RecordSeperator", 
+    p.add_option("--RecordSeperator",
                  default = '\n',
-                 type="string", 
+                 type="string",
                  dest="recSep",
                  help="the character(s) used to separate records in the output; [default '\n']")
-        
+
 
     (options,args) = p.parse_args()
 
     return(p)
 
-######################### main ##########################################
 
 def main():
 
@@ -139,7 +127,7 @@ def main():
 
     global inF, outF , errF , reportF
 
-    
+
     errF = sys.stderr
 
     p = CommandLine()
@@ -153,7 +141,7 @@ def main():
     # change the start time into a datetime.timedelta value
     dtStartTime = datetime.timedelta(seconds=timeStr2seconds(options.startTime))
 
-    # open output 
+    # open output
     if(options.outputFile != None):
         outF = open(options.outputFile,"w")
     else:
@@ -176,7 +164,7 @@ def main():
         if options.verbose:
             sys.stderr.write("specified interval %s <= existing interval %s ? %s\n\n"
                 % (dtIntervalSpec,dtInterval,(dtIntervalSpec<=dtInterval)))
-        # determine if this is a DOWNsample or an interpolation (UPsample) 
+        # determine if this is a DOWNsample or an interpolation (UPsample)
         # dtInterval is from the sample, dtIntervalSpec is from options spec
         if dtIntervalSpec <= dtInterval:
             # interpolation
@@ -199,7 +187,7 @@ def main():
 
     outF.close()
 
-############################# resequence #############################
+
 def resequence(filename,timeFormat):
     '''
     sorts the datafile by time
@@ -207,12 +195,11 @@ def resequence(filename,timeFormat):
 
     None # not yet implemented
 
-############################# class Interpolator #####################
 
 class Interpolator():
 
     global options
-    
+
     def __init__(self,
                  iTformat='caris',
                  oTformat='caris',
@@ -235,7 +222,7 @@ class Interpolator():
 
         self.halfTinterval = datetime.timedelta(seconds = (intervalSecs / 2.0))
         self.startTD = None
-        
+
     def process(self,infile,outfile):
         '''
         process the input and print out the interpolate
@@ -244,15 +231,15 @@ class Interpolator():
         @param datumOffset: meters above the sensor for datum 0 level
         @param stddev: standard deviation of tidal measurements
         @param timeFormat: strftime \% format string
-        @param interp: turn on or off (True or False) interpolation 
+        @param interp: turn on or off (True or False) interpolation
         @param verbose: send error handling reports to stderr
         '''
 
         global options
-        
+
         if options.debug > 0:
             print '''DEBUG:
-    Interpolator 
+    Interpolator
       tdStart %s
       tdInterval %s ''' % (self.dtStart,self.dtInterval)
 
@@ -270,11 +257,11 @@ class Interpolator():
         # the big loop through the data
         for line in inF:
             line.strip()
-        
+
             if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
                  continue # not a data record line
 
-            lastdTime = thisdTime 
+            lastdTime = thisdTime
             lastWL = WL
 
             # the time is in a datetime.datetime object
@@ -305,11 +292,11 @@ class Interpolator():
                                               (1 + tolerance))
                 if tdMaxInt.seconds <= tdAvgInt.seconds:
                     # make it at least one second more
-                    tdMaxInt = datetime.timedelta(seconds=(tdAvgInt.seconds + 1)) 
+                    tdMaxInt = datetime.timedelta(seconds=(tdAvgInt.seconds + 1))
                 if options.verbose:
-                    sys.stderr.write("Using interval: %d seconds; trigger interpolation %d seconds\n" % 
+                    sys.stderr.write("Using interval: %d seconds; trigger interpolation %d seconds\n" %
                                      (tdAvgInt.seconds,tdMaxInt.seconds))
- 
+
             if lastWL != None:
                 WLdiff = float(WL) - float(lastWL)
             else:
@@ -317,14 +304,14 @@ class Interpolator():
 
             # do we have missing data ???? (dtDiff is differance between current
             # data time and previous  -- INTERPOLATION ROUTINE
-            if  dtDiff != None and dtDiff > tdMaxInt: 
+            if  dtDiff != None and dtDiff > tdMaxInt:
 
                 missingTs = int(dtDiff.seconds / tdAvgInt.seconds)
 
                 if ((lastWL != None) and (lastdTime != None)) :
                     if options.reportFile != None:
                         reportF.write(
-                            "%d missing data points from %s to %s\n" % 
+                            "%d missing data points from %s to %s\n" %
                             (missingTs,
                              lastdTime.strftime(timeFmts[options.timeFormat]),
                              thisdTime.strftime(timeFmts[options.timeFormat])))
@@ -355,7 +342,7 @@ class Interpolator():
                                    options.timeFormat,
                                    interpDT,
                                    interpWL)
-        
+
             # continue with uninterpolated data output
                             if options.debug > 0:
                                 print "normal", thisdTime
@@ -364,7 +351,7 @@ class Interpolator():
                        thisdTime,
                        WL)
 
-########################### class Downsampler #############################
+
 class Downsampler():
 
     import time
@@ -372,7 +359,7 @@ class Downsampler():
     import string
     import numpy as np
 
-###
+
     def __init__(self,
                  iTformat='caris',
                  oTformat='caris',
@@ -387,7 +374,7 @@ class Downsampler():
         intervalSecs = dtInterval.seconds
         outTime = dtStart
         self.outTimeList = [outTime]
-        endTime = datetime.timedelta(days=1) + dtStart - dtInterval 
+        endTime = datetime.timedelta(days=1) + dtStart - dtInterval
         while (outTime < endTime):
             outTime = outTime + datetime.timedelta(seconds=intervalSecs)
             self.outTimeList.append(outTime)
@@ -400,22 +387,22 @@ class Downsampler():
 
         self.halfTinterval = datetime.timedelta(seconds = (intervalSecs / 2.0))
         self.startTD = None
-        
+
         # the data and time sample window
         self.reset()
-        self.current = np.array([]) # row: DTtime, epochTime, value 
-    
+        self.current = np.array([]) # row: DTtime, epochTime, value
+
     def dayTimeLimit(self,td):
         ''' used to reposition any datetime.timedeltas > 1 day, to
         the begining of the day'''
-       
+
         oneDay = datetime.timedelta(days=1)
-        
+
         if(td > oneDay):
             return (td - oneDay)
         else:
             return (td)
-        
+
 
     def process(self,infile,outfile):
         '''
@@ -427,7 +414,7 @@ class Downsampler():
 
         if options.debug > 0:
             print '''DEBUG:
-    Downsampler 
+    Downsampler
       dtStart %s
       dtInterval %s ''' % (self.dtStart,self.dtInterval)
         lastOutputDT = None # used to keep track of what's been done
@@ -435,7 +422,7 @@ class Downsampler():
         # the big loop through the data
         for line in inF:
             line.strip()
-        
+
             if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
                  continue # not a data record line
 
@@ -471,13 +458,13 @@ class Downsampler():
 
             self.windowPush() # add the current data to the window
 
-###
+
     def outputDateTime(self,dt):
         '''
         determines which outputDateTime should be associated
         with the given datetime
         '''
-        hms = datetime.timedelta(seconds=(dt.second 
+        hms = datetime.timedelta(seconds=(dt.second
                                           + dt.minute * 60
                                           + dt.hour * 60 * 60),
                                  microseconds=(dt.microsecond))
@@ -497,7 +484,7 @@ class Downsampler():
         # .. with the previous outTimeList entry
         return(outputDate + self.outTimeList[n-1])
 
-###
+
     def windowPush(self):
         '''
         pushes the current time/data set onto the queue
@@ -506,7 +493,7 @@ class Downsampler():
             self.window = np.array([self.current])
         else:
             self.window = np.vstack((self.window,self.current))
-###
+
     def threshold(self):
         '''
         window first time (in seconds) + the interval
@@ -516,7 +503,6 @@ class Downsampler():
         else:
             return self.interval.Secs
 
-###
     def align(self,time):
         '''
         using the line equation from a least squares fit to the
@@ -524,7 +510,7 @@ class Downsampler():
         estimated. output is the time prescribed and the estimated
         value. (Epoch time is used in the fit and the solution.)
         '''
-        
+
         if len(self.window) == 0: return (None,None)
 
         times = list(self.window[:,1])
@@ -539,19 +525,13 @@ class Downsampler():
             value = np.average(values)
         return(time,value)
 
-###
     def reset(self):
-        ''' 
+        '''
         clears the window of data
         '''
         self.window = np.array([])
 
 
-
-
-######################################################################
-# Code that runs when this file is executed directly
-######################################################################
 if __name__ == '__main__':
     main()
 

@@ -1,6 +1,4 @@
-'''
-Utility routines common to the tideTools
-'''
+"""Utility routines common to the tideTools"""
 
 import sys
 import datetime
@@ -9,15 +7,10 @@ import re
 import string
 
 
-########### globals #################
-
-### regular expressions compiled
-
 commentRE = re.compile(r"^\s*\#") # a comment line
 blankRE = re.compile(r"^\s*$") # a blank line
 
-### Fmts and Types
-
+# Formats and Types
 timeFmts = {
     'caris':'%Y/%m/%d %H:%M:%S'
     ,'matlab':'%Y\t%m\t%d\t%H\t%M\t%S\t'
@@ -28,16 +21,16 @@ timeTypes=timeFmts.keys()+['UNIXepoch']
 
 plotColors=['blue','red','green','orange','black']
 
-################ sampleTimedelta ###########################
+
 def sampleTimedelta(fPtr,options):
     '''
     Reads a data file pointed to by fPtr (the file must already be open),
     and finds the lowest mode value of time deltas. Rewinds the file
-    after sampling. If a maxSample is specified, then only that many 
+    after sampling. If a maxSample is specified, then only that many
     samples are taken, otherwise the entire file is read.
 
     The value returned is a datetime.timedelta value and is found by
-    looking at the statistical histogram of time deltas. This method 
+    looking at the statistical histogram of time deltas. This method
     does not work well if the timestamps are random or have minor variations.
     (Perhaps we will move to "Kernel Density Estimation" if such refinement
     is needed. (Thanks to BRK for that suggestion.)
@@ -49,7 +42,7 @@ def sampleTimedelta(fPtr,options):
 
     if options.debug > 0:
         print '''DEBUG:
-    sampleTimedelta 
+    sampleTimedelta
       maxSamples %d \n''' % (maxSamples)
 
     thisdTime = lastdTime = None
@@ -61,17 +54,17 @@ def sampleTimedelta(fPtr,options):
 
     for line in fPtr:
         line.strip()
-        
+
         if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
             continue # not a data record line
 
-        lastdTime = thisdTime 
+        lastdTime = thisdTime
 
         # the time is in a datetime.datetime object
         (thisdTime,WL,otherFields) = \
             findTideFields(line,timeFormat)
 
-            
+
         sampleCounter += 1
         if lastdTime != None:
             diff = (thisdTime - lastdTime).seconds
@@ -86,7 +79,7 @@ def sampleTimedelta(fPtr,options):
             break
 
     # we have our sample.. find smallest mode and rewind file
-        
+
     keyValues = samples.keys()
     keyValues.sort()
     keyValues.reverse() # so that the last value looked at is the smallest
@@ -100,8 +93,8 @@ def sampleTimedelta(fPtr,options):
 
     if options.debug > 0:
         print '''DEBUG:
-    sampleTimedelta 
-      samples %d 
+    sampleTimedelta
+      samples %d
       modal interval %d \n''' % (sampleCounter,modal)
 
     fPtr.seek(0) # rewind
@@ -216,18 +209,20 @@ def tideOutput(out,
             resultStr += fieldSep + str(v)
     out.write(resultStr + recSep)
 
-###################### join ############################
+
 def join(list,sep):
     '''
-    returns a string composed of the stringified 
+    returns a string composed of the stringified
     elements of list separated by the sep string
+
+    TODO(schwehr): Just use 'foo'.join(list)
     '''
 
     slist = map(lambda x: str(x), list)
     result = string.join(slist,sep)
     return result
 
-###################### dt2fSecs #################
+
 def dt2fSecs(dt):
     '''
     takes a datetime.timedelta objects and returns a float
@@ -238,7 +233,7 @@ def dt2fSecs(dt):
 
     return(dt.seconds + (10**(-6)) * dt.microseconds)
 
-################ timeStr2seconds ##################
+
 def timeStr2seconds(timeStr):
     '''
     parses the timeStr (format HH:MM:SS) and
@@ -247,18 +242,16 @@ def timeStr2seconds(timeStr):
     (hours,minutes,seconds) = string.split(timeStr,sep=':')
     return (60.*60.* float(hours) + 60. * float(minutes) + float(seconds))
 
-#################### datetime2epoch ##################
+
 def datetime2epoch(dt):
     '''
     converts a datetime object into epoch time
     '''
     return time.mktime(dt.timetuple())
 
-#################### epoch2datetime ###################
+
 def epoch2datetime(et):
     '''
     converts epoch time to a datetime object
     '''
     return datetime.datetime.utcfromtimestamp(et)
-
-###################

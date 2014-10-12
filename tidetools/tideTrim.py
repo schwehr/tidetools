@@ -1,42 +1,5 @@
 #!/usr/bin/env python
-
-
-# subversion commands:
-# svn propset svn:keywords 'Revision Date' template.py
-# svn propset svn:executable ON template.py
-
-__author__    = 'Ben Smith'
-__version__   = '$Revision: 100 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $'.split()[1]
-__copyright__ = '2009'
-__license__   = 'Apache 2.0'
-__contact__   = 'ben at ccom.unh.edu'
-__deprecated__ = ''
-
-__doc__ ='''
-A set of utilities for triming tide data to a window of time, and or statistical
-window.
-
-Ben Smith - Center for Coastal and Ocean Mapping 2008,2009
-http://ccom.unh.edu
-
-@requires: U{Python<http://python.org/>} >= 2.5
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0.1
-@requires: U{psycopg2<http://initd.org/projects/psycopg2/>} >= 2.0.6
-
-@undocumented: __doc__
-@since: 2009-Jan-25
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
-
-@see: U{python idioms<http://jaynes.colorado.edu/PythonIdioms.html>} - Read this before modifying any code here.
-@see: U{Python Tips, Tricks, and Hacks<http://www.siafoo.net/article/52}
-'''
-
-# Optional...
-# @author: U{'''+__author__+'''<http://vislab-ccom.unh.edu/>} FIX: replace with your name/url
-
+"""Trim tide data to a window of time, and or statistical window."""
 
 import sys
 import os
@@ -108,7 +71,7 @@ width (see -w --width), default is 1.5 sigma''')
     p.add_option('-B','--BadDataFile'
                  ,dest='badDataFile'
                  ,default=None,
-                 help='Place out-of-bounds data in a file for review [default: None]')    
+                 help='Place out-of-bounds data in a file for review [default: None]')
     p.add_option("-X", "--debug", type="int", default=0,
                  dest="debug",
                  help="debug level: 0 is off; powers of 2 for levels")
@@ -129,13 +92,12 @@ width (see -w --width), default is 1.5 sigma''')
                  type="string", dest="recSep",
                  help="the character(s) used to separate records in the output; [default '\\n']")
 
-        
-        
+
+
     (options,args) = p.parse_args()
 
     return(p)
 
-######################### main ##########################################
 
 def main():
 
@@ -147,7 +109,7 @@ def main():
 
     beginDT = None
     endDT = None
-    
+
     p = CommandLine()
 
     if(options.beginTime != None):
@@ -162,7 +124,7 @@ def main():
                 options.width)
 
     # open input and output and err
-    if(options.input != None): 
+    if(options.input != None):
         inF = open(options.input,"r")
     else:
         inF = sys.stdin
@@ -180,15 +142,15 @@ def main():
     # the big loop through the data
     for line in inF:
         line.strip()
-        
+
         # the time is in a datetime.datetime object
         (time,data,otherFields) = findTideFields(line,
                                                  options.timeFormat,
                                                  options.fieldSep,
                                                  options.recSep)
-        
+
         (oTime,oData) = trim.test(time,data)
-        if(oTime != None) and (oData != None):        
+        if(oTime != None) and (oData != None):
             tideOutput(outF,
                        timeFormat=options.timeFormat,
                        dTime=oTime,
@@ -207,11 +169,6 @@ def main():
         sys.stderr.write("%d good records; %d bad records\n" % (goodCntr,badCntr))
 
 
-
-
-
-
-################### Trim class ##########################################
 
 class Trim():
 
@@ -237,9 +194,9 @@ class Trim():
         '''
 
         # the time constraints
-        if ( (self.beginT != None) and (time < self.beginT)): 
+        if ( (self.beginT != None) and (time < self.beginT)):
             return [None,None]
-        if ( (self.endT != None) and ( self.endT < time)): 
+        if ( (self.endT != None) and ( self.endT < time)):
             return [None,None]
 
 
@@ -247,9 +204,9 @@ class Trim():
         if (options.LSR):
 
             self.queue = vstack((self.queue,[time,data])) # push
-        
+
             # we have a full queue - let's use it
-            if len(self.queue) > self.width:  
+            if len(self.queue) > self.width:
                 # first, let's drop the earliest member of the queue
                 self.queue = self.queue[1:,:] # equivalent to a shift
                 # now do the stats
@@ -257,8 +214,8 @@ class Trim():
                     return self.queue[self.center]
                 else:
                     return [None,None]
-       
-        return ([time,data]) 
+
+        return ([time,data])
 
 #############
     def stdevEval(self):
@@ -274,7 +231,7 @@ class Trim():
             # using epoch seconds
             times.append(time.mktime(td.timetuple()))
 
-        times = self.queue[:,0] 
+        times = self.queue[:,0]
         vals = self.queue[:,1] # second column
         mean = vals.mean()
         stdev = vals.std()
@@ -283,10 +240,10 @@ class Trim():
             return True
         else:
             return False
-############        
+
     def LSLRstdevEval(self):
         '''
-        applies the stdevEval to least squares 
+        applies the stdevEval to least squares
         linear regression for the points in the
         queue
         '''
@@ -311,7 +268,5 @@ class Trim():
             return False
 
 
-
-#########################################################################
 if __name__=='__main__':
     main()

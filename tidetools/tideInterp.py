@@ -1,16 +1,6 @@
 #!/usr/bin/env python
-'''
-__author__    = 'Ben Smith'
-__version__   = '$Revision: 9665 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-06-19 08:23:00 -0700 (Thu, 19 Jun 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-__contact__   = 'ben at ccom.unh.edu'
-__doc__ ='''
+"""TODO: Describe module."""
 
-
-################# Libs
 import time
 import datetime
 import os
@@ -18,7 +8,6 @@ import sys
 import numpy as np
 from tideLib import *
 from optparse import OptionParser
-
 
 
 def CommandLine():
@@ -29,8 +18,8 @@ def CommandLine():
     global options,args
 
     p = OptionParser()
-    p.add_option("-i", "--inputFiles", 
-                 type="string", 
+    p.add_option("-i", "--inputFiles",
+                 type="string",
                  dest="inputFiles",
                  action="append",
                  default=[],
@@ -42,12 +31,12 @@ def CommandLine():
                  default="SI",
                  choices=["SI","CM"],
                  help="One of these: SI (Star Island), CM (Castine, Maine)")
-    p.add_option("-o", "--outputFile", 
+    p.add_option("-o", "--outputFile",
                  default = None,
                  type="string", dest="outputFile",
                  help="the file to write to (overwrites)",
                  metavar="FILE")
-    p.add_option("-T", "--Tinterval", type="string", 
+    p.add_option("-T", "--Tinterval", type="string",
                  default=None,
                  dest="interval",
                  help='''HH:MM:SS for upsampling interval. tideInterp
@@ -74,13 +63,12 @@ can be used to artificial increase the density of the data.''')
     p.add_option("--RecordSeperator", default = '\n',
                  type="string", dest="recSep",
                  help="the character(s) used to separate records in the output; [default '\n']")
-        
+
 
     (options,args) = p.parse_args()
 
     return(p)
 
-######################### main ##########################################
 
 def main():
 
@@ -88,13 +76,13 @@ def main():
 
     global inF, outF , errF , reportF
 
-    
+
     errF = sys.stderr
 
     itr = Interpolator()
     p = CommandLine()
 
-    # open output 
+    # open output
     if(options.outputFile != None):
         outF = open(options.outputFile,"w")
     else:
@@ -119,8 +107,7 @@ def main():
 class Interpolator():
 
     global options
-    
-    ##################################################################
+
     def sample(self):
         ''' samples the time differences to find an mode of time diff '''
 
@@ -133,17 +120,17 @@ class Interpolator():
 
         for line in inF:
             line.strip()
-        
+
             if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
                  continue # not a data record line
 
-            lastdTime = thisdTime 
+            lastdTime = thisdTime
 
             # the time is in a datetime.datetime object
             (thisdTime,WL,otherFields) = \
                 findTideFields(line,options.timeFormat)
 
-            
+
             sampleCounter += 1
             if lastdTime != None:
                 diff = (thisdTime - lastdTime).seconds
@@ -158,7 +145,7 @@ class Interpolator():
                 break
 
         # we have our sample.. find smallest mode and rewind file
-        
+
         keyValues = samples.keys()
         keyValues.sort()
         keyValues.reverse() # so that the last value looked at is the smallest
@@ -173,7 +160,6 @@ class Interpolator():
         inF.seek(0) # rewind
         return(datetime.timedelta(seconds=modal))
 
-    ###################################################################
     def process(self,infile,outfile):
         '''
         process the input and print out the interpolate
@@ -182,7 +168,7 @@ class Interpolator():
         @param datumOffset: meters above the sensor for datum 0 level
         @param stddev: standard deviation of tidal measurements
         @param timeFormat: strftime \% format string
-        @param interp: turn on or off (True or False) interpolation 
+        @param interp: turn on or off (True or False) interpolation
         @param verbose: send error handling reports to stderr
         '''
 
@@ -209,11 +195,11 @@ class Interpolator():
         # the big loop through the data
         for line in inF:
             line.strip()
-        
+
             if ( re.search(commentRE,line) or ( re.search(blankRE,line))):
                  continue # not a data record line
 
-            lastdTime = thisdTime 
+            lastdTime = thisdTime
             lastWL = WL
 
             # the time is in a datetime.datetime object
@@ -244,11 +230,11 @@ class Interpolator():
                                               (1 + tolerance))
                 if tdMaxInt.seconds <= tdAvgInt.seconds:
                     # make it at least one second more
-                    tdMaxInt = datetime.timedelta(seconds=(tdAvgInt.seconds + 1)) 
+                    tdMaxInt = datetime.timedelta(seconds=(tdAvgInt.seconds + 1))
                 if options.verbose:
-                    sys.stderr.write("Using interval: %d seconds; trigger interpolation %d seconds\n" % 
+                    sys.stderr.write("Using interval: %d seconds; trigger interpolation %d seconds\n" %
                                      (tdAvgInt.seconds,tdMaxInt.seconds))
- 
+
             if lastWL != None:
                 WLdiff = float(WL) - float(lastWL)
             else:
@@ -256,14 +242,14 @@ class Interpolator():
 
             # do we have missing data ???? (dtDiff is differance between current
             # data time and previous  -- INTERPOLATION ROUTINE
-            if  dtDiff != None and dtDiff > tdMaxInt: 
+            if  dtDiff != None and dtDiff > tdMaxInt:
 
                 missingTs = int(dtDiff.seconds / tdAvgInt.seconds)
 
                 if ((lastWL != None) and (lastdTime != None)) :
                     if options.reportFile != None:
                         reportF.write(
-                            "%d missing data points from %s to %s\n" % 
+                            "%d missing data points from %s to %s\n" %
                             (missingTs,
                              lastdTime.strftime(timeFmts[options.timeFormat]),
                              thisdTime.strftime(timeFmts[options.timeFormat])))
@@ -294,7 +280,7 @@ class Interpolator():
                                    options.timeFormat,
                                    interpDT,
                                    interpWL)
-        
+
             # continue with uninterpolated data output
                             if options.debug > 0:
                                 print "normal", thisdTime
@@ -304,10 +290,6 @@ class Interpolator():
                        WL)
 
 
-
-######################################################################
-# Code that runs when this file is executed directly
-######################################################################
 if __name__ == '__main__':
     main()
 

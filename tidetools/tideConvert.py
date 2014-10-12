@@ -1,21 +1,8 @@
 #!/usr/bin/env python
-__author__    = 'Kurt Schwehr'
-__version__   = '$Revision: 9665 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-06-19 08:23:00 -0700 (Thu, 19 Jun 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-__contact__   = 'kurt at ccom.unh.edu :: ben at ccom.unh.edu'
-__doc__ ='''
+"""Process the data for from Aanderaa data logger to Caris format.
 
-
-This version has been modified by Ben Smith 2/3/09
--added UNIX epoch time output
-This version has been edited by Monica Wolfson on 6/25/08
-
-Process the data for summer Hydro 2008.
-
-Comes in this format on tide2.schwehr.org in ~data/data/tide/tide-memma-2008-MM-DD
+Comes in this format on tide2.schwehr.org
+in ~data/data/tide/tide-memma-2008-MM-DD
 
 # START LOGGING UTC seconds since the epoch: 1213488002.45
 # SPEED:       9600
@@ -32,7 +19,7 @@ Comes in this format on tide2.schwehr.org in ~data/data/tide/tide-memma-2008-MM-
 635  712  426,rmemma,1213488087.33
 63
 
-Caris seems to want...
+Caris seems to want:
 
 ----------- FORT POINT , NH:  8423898 -----------
 --------------------- 8423898.tid ---------------------
@@ -68,43 +55,39 @@ std_dev          REAL    4   metres
 2007/06/01 00:36:00    1.55   0.010
 2007/06/01 00:42:00    1.62   0.008
 
-@see: http://pypi.python.org/pypi/tappy/ Is tappy useful for CCOM?
-
+see: http://pypi.python.org/pypi/tappy/ Is tappy useful?
 
 2010/07/22: adding a comma delimited format for microwave tide station:
 <mm/dd/yyy>,<hh:mm:ss>,<id>,<height(float)>,<unit(str)>,<method(str)
+"""
 
-'''
-
-################# Libs
 from optparse import OptionParser
 import time
 import datetime
 import string
 import os
+import re
 import sys
 import numpy as np
-from tideLib import *
 
-# Coefficients for water level in meters
-A=-1.008E-01
-B=5.125E-03
-C=7.402E-08
+from __init__ import __version__
+import tideLib
 
-#os.system ('date')
-#os.system ('date -u')
-#now = time.time()
-#datetime.datetime.utcfromtimestamp(now)
+# Coefficients for water level in meters.  This is specific to each 
+# pressure sensor.
+A = -1.008E-01
+B = 5.125E-03
+C = 7.402E-08
 
-######## input formats
-
+# input formats
 snttRE = re.compile(r'^\s*(\d+)\s+(\d+)\s+(\d+),(\w+),(\d+\.\d+)')
 dttnRE = re.compile(r'^\s*(\d+\/\d+\/\d+\s+\d+:\d+)\s+(\d+)\s+(-?\d+\.\d+)')
 tvwlRE = re.compile(r'(\d+:\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)')
 cdlRE = re.compile(r'^\s*(\d+\/\d+\/\d+),(\d+:\d+:\d+),\S*,(\d+\.\d+)')
 #Time/Date :   8 July-2009 16:53:00
 dateStrRE = re.compile(r'Time/Date\s+\:\s+(\d+)\s+(\w+-\d+)')
-0
+
+
 def snttParser(line,D=None):
     '''
     input line like:
@@ -126,17 +109,17 @@ def snttParser(line,D=None):
 
         # water Level(m)=((A+BN+CN^2+DN^3)/d*g)) with D = 0.0
         WL = ( A + B*N + C*(N**2) ) - options.datumOffset
-        
+
     except:
         return(None,None)
 
     return(DT,WL)
-    
+
 def dttnParser(line,D=None):
     '''
     input line like:
       time      temp     waterlevel
-      16:53     377.0    576.0  
+      16:53     377.0    576.0
     parses input line to generate datetime, pressure, temperature tuple
     '''
 
@@ -173,7 +156,7 @@ def cdlParser(line,D=None):
         return(None,None)
 
     return(DT,WL)
-                   
+
 def tvwlParser(line,D=None):
     '''
     input line like:
@@ -205,11 +188,8 @@ inputParser = {
     'DTWL' : dttnParser,
     'TVWL' : tvwlParser,
     'CDL'  : cdlParser
-} 
+}
 
-
-
-#########
 
 def CommandLine():
     '''
@@ -218,53 +198,54 @@ def CommandLine():
     global options,args
 
     p = OptionParser(usage="%prog [options] tide files",
-                          version="%prog "+__version__+' ('+__date__+')')
-    p.add_option('-i','--input-files', 
-                      dest='inputFiles', 
-                      action='append',
-                      default=[], 
-                      help='What files to read from ' + \
+                          version="%prog "+__version__)
+    p.add_option('-i','--input-files',
+                 dest='inputFiles',
+                 action='append',
+                 default=[],
+                 help='What files to read from ' + \
                  '[default: %default - stdin if None]')
     p.add_option('-I','--InputFormat'
-                      ,dest='InputFormat'
-                      ,type='choice'
-                      ,default='SNTT'
-                      ,choices=inputParser.keys()
-                      ,help= 'Input time format. One of: ' + \
-                          ', '.join(inputParser.keys())+ ' [default: %default] ')
-    p.add_option('-o','--output-file', 
-                      dest='outFilename', default=None, 
-                      help='What filename to write to [default: %default - stdout if None]')
+                 ,dest='InputFormat'
+                 ,type='choice'
+                 ,default='SNTT'
+                 ,choices=inputParser.keys()
+                 ,help= 'Input time format. One of: ' + \
+                 ', '.join(inputParser.keys()) +
+                 ' [default: %default] ')
+    p.add_option('-o','--output-file',
+                 dest='outFilename', default=None,
+                 help='What filename to write to [default: %default - stdout if None]')
 
     p.add_option('-O','--OutputFormat'
-                      ,dest='timeFormat'
-                      ,type='choice'
-                      ,default='caris'
-                      ,choices=timeTypes
-                      ,help= 'Output time format. One of: ' + \
-                          ', '.join(timeTypes)+ ' [default: %default] ')
+                 ,dest='timeFormat'
+                 ,type='choice'
+                 ,default='caris'
+                 ,choices=tideLib.timeTypes
+                 ,help= 'Output time format. One of: ' + \
+                 ', '.join(tideLib.timeTypes)+ ' [default: %default] ')
     p.add_option('-B','--BadLineFile'
                  ,dest='badLineFile'
                  ,default=None,
                  help='Place unparseable lines in a file for review [default: None]')
-    p.add_option('-t','--timeshift', 
-                      dest='timeshift', default=0
-                      ,type='float'
-                      ,help='in seconds.  You will need to ' +\
-                     'shift time for data from 2008-06-15 and ' +\
-                     'older by +/- 45 seconds [default: %default]')
+    p.add_option('-t','--timeshift',
+                 dest='timeshift', default=0
+                 ,type='float'
+                 ,help='in seconds.  You will need to ' +\
+                 'shift time for data from 2008-06-15 and ' +\
+                 'older by +/- 45 seconds [default: %default]')
 
-    p.add_option('-v', '--verbose', 
-                      dest='verbose', default=False, action='store_true',
-                      help='run the tests run in verbose mode')
+    p.add_option('-v', '--verbose',
+                 dest='verbose', default=False, action='store_true',
+                 help='run the tests run in verbose mode')
 
     p.add_option('-D','--datum-offset'
-                      ,dest='datumOffset'
-                      ,type='float'
-                      ,default=0
-                      ,help= 'Distance from the sensor up to the '+\
-                     'datum offset in meters (negative is below the '+\
-                     'sensor) [default: %default] ')
+                 ,dest='datumOffset'
+                 ,type='float'
+                 ,default=0
+                 ,help= 'Distance from the sensor up to the '+\
+                 'datum offset in meters (negative is below the '+\
+                 'sensor) [default: %default] ')
     p.add_option("--FieldSeparator", default = '\t',
                  type="string", dest="fieldSep",
                  help="the character(s) used to separate fields in files; [default '\\t']")
@@ -275,21 +256,16 @@ def CommandLine():
 
     (options, args) = p.parse_args()
 
-    return(p)
+    return p
 
 
-
-############################## main ###################################
 def main():
-    '''
-    process a list of files
-    '''
+    """Process a list of files."""
 
     global options, args, blf
     blf = None # badLineFile filePtr
 
     p = CommandLine()
-
 
     out = sys.stdout
     if options.outFilename:
@@ -300,21 +276,20 @@ def main():
     filelist = args + options.inputFiles
 
     # statistics
-    all = good = bad = 0
+    everything = good = bad = 0
 
     for filename in filelist:
         (a,b,g) = processFile(file(filename),out)
 
         sys.stderr.write('%s:: all: %d :: good: %d :: bad: %d\n' %
                      (filename,a,g,b))
-        all += a
+        everything += a
         bad += b
         good += g
 
     sys.stderr.write('TOTAL:: all: %d :: good: %d :: bad: %d\n' %
-                     (all,good,bad))
+                     (everything, good, bad))
 
-#########
 
 def processFile(infile,out):
     '''
@@ -366,9 +341,7 @@ def processFile(infile,out):
 
     return(datalineCount,errCount,datalineCount-errCount)
 
-######################################################################
-# Code that runs when this file is executed directly
-######################################################################
+
 if __name__ == '__main__':
     main()
 
