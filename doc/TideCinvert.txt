@@ -12,7 +12,7 @@ The program tideConvert takes Anderra tide gauge data in several different forma
 
 [edit] Algorithm
 
-The conversion from the tide guage formats (there are many different ones) is not a simple process because it relies on pattern recognition via the software tool "regular expressions". However, once the patterns are recognized and the values are converted from strings of digits to numeric values, the data conversion and reformating is fairly straight forward.
+The conversion from the tide gauge formats (there are many different ones) is not a simple process because it relies on pattern recognition via the software tool "regular expressions". However, once the patterns are recognized and the values are converted from strings of digits to numeric values, the data conversion and reformatting is fairly straight forward.
 
 If the recorded data is raw pressure, we use the formula:
 
@@ -105,7 +105,7 @@ This is the format used at the JEL tide gauge during the summer of 2009
 
 Select this format with the -I TVWL option.
 
-This format has the date only at the begining of each day. Each reading then shows the time (without the date). The format looks like this:
+This format has the date only at the beginning of each day. Each reading then shows the time (without the date). The format looks like this:
 
 <code lang=text>
 Time/Date :   8 July-2009 16:53:00
@@ -151,7 +151,7 @@ Description
 [path/]filename
 	
 
-Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input.
+Which files to process. This option may be used more than once. Command line arguments will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input.
 
 -I
 	

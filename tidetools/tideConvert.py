@@ -227,7 +227,7 @@ def CommandLine():
     p.add_option('-B','--BadLineFile'
                  ,dest='badLineFile'
                  ,default=None,
-                 help='Place unparseable lines in a file for review [default: None]')
+                 help='Place unparsable lines in a file for review [default: None]')
     p.add_option('-t','--timeshift',
                  dest='timeshift', default=0
                  ,type='float'

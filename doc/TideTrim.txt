@@ -32,7 +32,7 @@ This process introduces gaps in the data's time continuity. It is important to f
 Short 	Long 	Type 	Default 	Description
 -i 	--input-files 	[path/]filename 	None 	
 
-Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
+Which files to process. This option may be used more than once. Command line arguments will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
 -o 	--outputFile 	[path/]filename 	None 	
 
 The file to write the output to. If no file is specified, the output will go to STDOUT.

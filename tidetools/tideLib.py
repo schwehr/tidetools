@@ -50,7 +50,7 @@ def sampleTimedelta(fPtr,options):
     sampleCounter = 0
     diff = 0
 
-    fPtr.seek(0) # start at begining of file
+    fPtr.seek(0) # start at beginning of file
 
     for line in fPtr:
         line.strip()

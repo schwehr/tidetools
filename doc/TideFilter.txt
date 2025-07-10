@@ -31,7 +31,7 @@ The data is evaluated within a moving window. Each value in the window is weight
 Short 	Long 	Type 	Default 	Description
 -i 	--input-files 	[path/]filename 	None 	
 
-Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
+Which files to process. This option may be used more than once. Command line arguments will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
 -o 	--outputFile 	[path/]filename 	None 	
 
 The file to write the output to. If no file is specified, the output will go to STDOUT.
@@ -40,10 +40,10 @@ The file to write the output to. If no file is specified, the output will go to 
 The filter specification is a string of values representing 1/2 of the weighting design. The default filter specification of 7 equal values will generate a boxcar filter with a window of 15 datapoints.
 -W 	--widthBoxcar 	number 	15 	
 
-width of boxcar filter. Use of this option supercedes the -F --filterSpec option.
+width of boxcar filter. Use of this option supersedes the -F --filterSpec option.
 -T 	--threshold 	float_value 	0.0 	
 
-A minimum absolute value for smoothing to be applied to a point. This can be used to eliminte jitter.
+A minimum absolute value for smoothing to be applied to a point. This can be used to eliminate jitter.
 -v 	--verbose 	flag 	False 	
 
 Run with status output to stderr
@@ -77,7 +77,7 @@ The weighting scheme is applied over the window width to produce a value for the
 
 The process is reapplied to the entire data set, one data point at a time.
 
-This method prevents a time-bias because it symetric around each data point. But there is a cost: data is lost at either end of the data set where the window cannot be filled. The loss at either end is equal to one half of the data window.
+This method prevents a time-bias because it symmetric around each data point. But there is a cost: data is lost at either end of the data set where the window cannot be filled. The loss at either end is equal to one half of the data window.
 [edit] Examples
 
      filterSpec = [9,5,1]  

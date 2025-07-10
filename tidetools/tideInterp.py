@@ -116,7 +116,7 @@ class Interpolator():
         samples = {}
         sampleCounter = 0
 
-        inF.seek(0) # start at begining of file
+        inF.seek(0) # start at beginning of file
 
         for line in inF:
             line.strip()
@@ -174,7 +174,7 @@ class Interpolator():
 
         global options
 
-        # initialize consequetive errors counter and variables
+        # initialize consecutive errors counter and variables
         conseqErrs = 0
         thisdTime = lastdTime = None
         WL = lastWL = None
@@ -240,7 +240,7 @@ class Interpolator():
             else:
                 WLdiff = 0
 
-            # do we have missing data ???? (dtDiff is differance between current
+            # do we have missing data ???? (dtDiff is difference between current
             # data time and previous  -- INTERPOLATION ROUTINE
             if  dtDiff != None and dtDiff > tdMaxInt:
 
@@ -292,4 +292,3 @@ class Interpolator():
 
 if __name__ == '__main__':
     main()
-

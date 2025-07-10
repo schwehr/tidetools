@@ -175,7 +175,7 @@ class Resampler():
 
             (dt,value,otherFields) = findTideFields(line,self.iTformat)
             if self.startTD == None:
-                # start timedate is set to begining of first day of data
+                # start timedate is set to beginning of first day of data
                 self.startTD = datetime.datetime(year=dt.year,
                                                  month=dt.month,
                                                  day=dt.day)
@@ -276,4 +276,3 @@ class Resampler():
 
 if __name__ == '__main__':
     main()
-

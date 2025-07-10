@@ -91,7 +91,7 @@ def main():
 
         colIndx = (colIndx + 1) % nColors
 
-    # finish up formating the plot
+    # finish up formatting the plot
     fig.autofmt_xdate()
     plt.legend()
     plt.show()
@@ -99,4 +99,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

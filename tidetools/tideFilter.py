@@ -29,7 +29,7 @@ defFilterSpec = [10,10,10,10,10,10,10,10] # 15 wide boxcar
 #defFilterSpec = [10,10,9,9,9,9,9,8,8,8,8,7,7,7,6,5,4,3,3,2,2,1,1] # 45-wide
 #defFilterSpec = [10,7,5,4,3,2,1] # 13 wide 'Gaussian' (sort of)
 '''
-FilterSpec represents a symetrical filter centered around the first element
+FilterSpec represents a symmetrical filter centered around the first element
 '''
 defTimeColumn = 1
 defDataColumn = 2
@@ -55,12 +55,12 @@ def CommandLine():
     p.add_option("-F", "--filterSpec", default = None,
                  type="string", dest="filterSpecStr",
                  help='''a string of space delimited numbers that describe
-the filter weights. The filter created will be symetrical around the first
+the filter weights. The filter created will be symmetrical around the first
 element in the list and as wide as twice the description minus 1''')
     p.add_option("-W","--widthBoxcar", type="int", default=None,
                  dest="boxcarWidth",
                  help='''width of a boxcar filter.
-Use of this option supercedes the -F --filterSpec option''')
+Use of this option supersedes the -F --filterSpec option''')
     p.add_option("-t", "--timeCol", type="int", default=defTimeColumn,
                  dest="timeColumn",
                  help="The input column representing time")
@@ -166,7 +166,7 @@ def main():
                        recSep=options.recSep)
 
             # else skip the line in output.. hopefully only because
-            # we are at the begining or end of the data set
+            # we are at the beginning or end of the data set
 
 
 class LowPass():
@@ -233,7 +233,7 @@ class LowPass():
 
             #    an example filterSpec is 9 8 5 3
             # grab the first element
-            centerVal = filterSpec.pop(0)  # 9   --pop(0) is eqivalent to shift
+            centerVal = filterSpec.pop(0)  # 9   --pop(0) is equivalent to shift
             revList = list(filterSpec)        # 8 5 3 -- need to make a copy
             revList.reverse()           # 3 5 8
             designList = revList + [centerVal] + filterSpec # 3 5 8 9 8 5 3

@@ -30,7 +30,7 @@ The output consists of time (in appropriate format) the height, a single letter 
 Short 	Long 	Type 	Default 	Description
 -i 	--input-files 	[path/]filename 	None 	
 
-Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
+Which files to process. This option may be used more than once. Command line arguments will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
 -I 	--InputFormat 	One of:
 caris
 matlab

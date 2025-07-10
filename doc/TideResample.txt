@@ -24,7 +24,7 @@ Contents
 Short 	Long 	Type 	Default 	Description
 -i 	--input-files 	[path/]filename 	None 	
 
-Which files to process. This option may be used more than once. Command line arguements will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
+Which files to process. This option may be used more than once. Command line arguments will be interpreted as input file names. If there is no input specified either as an option or as an argument, STDIN will be used for input. (Path is optional.)
 -I 	--InputFormat 	One of:
 caris
 matlab
@@ -111,4 +111,4 @@ Data before interpolation. Notice the gaps in the data. (Click on the image to z
 A detail of the data before interpolation. (Click on the image to zoom in for detail.)
 Data after interpolation. Notice the gaps are now filled in the data. (Click on the image to zoom in for detail.)
 	
-A detail of the data after interpoloation. (Click on the image to zoom in for detail.)
+A detail of the data after interpolation. (Click on the image to zoom in for detail.)

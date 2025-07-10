@@ -1,4 +1,4 @@
-The CCOM Tide Tools is a collection of utilities for processing the data that is recorded by our tide guages. The tools are scripts written in Python. They can easily be converted to Perl and Matlab.
+The CCOM Tide Tools is a collection of utilities for processing the data that is recorded by our tide gauges. The tools are scripts written in Python. They can easily be converted to Perl and Matlab.
 
 The design is for a data flow, from raw data captured at the tide station to input suitable for Caris and tide predictions based both on range and offset from a primary station, and tidal constituents derived from the data.
 

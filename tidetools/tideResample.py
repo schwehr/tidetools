@@ -243,7 +243,7 @@ class Interpolator():
       tdStart %s
       tdInterval %s ''' % (self.dtStart,self.dtInterval)
 
-        # initialize consequetive errors counter and variables
+        # initialize consecutive errors counter and variables
         conseqErrs = 0
         thisdTime = lastdTime = None
         WL = lastWL = None
@@ -302,7 +302,7 @@ class Interpolator():
             else:
                 WLdiff = 0
 
-            # do we have missing data ???? (dtDiff is differance between current
+            # do we have missing data ???? (dtDiff is difference between current
             # data time and previous  -- INTERPOLATION ROUTINE
             if  dtDiff != None and dtDiff > tdMaxInt:
 
@@ -378,7 +378,7 @@ class Downsampler():
         while (outTime < endTime):
             outTime = outTime + datetime.timedelta(seconds=intervalSecs)
             self.outTimeList.append(outTime)
-        self.outTimeList = map(self.dayTimeLimit,self.outTimeList) # fill in begining
+        self.outTimeList = map(self.dayTimeLimit,self.outTimeList) # fill in beginning
         self.outTimeList.sort() # in order
 
         if options.debug > 0:
@@ -394,7 +394,7 @@ class Downsampler():
 
     def dayTimeLimit(self,td):
         ''' used to reposition any datetime.timedeltas > 1 day, to
-        the begining of the day'''
+        the beginning of the day'''
 
         oneDay = datetime.timedelta(days=1)
 
@@ -428,7 +428,7 @@ class Downsampler():
 
             (dt,value,otherFields) = findTideFields(line,self.iTformat)
             if self.dtStart == None:
-                # start timedate is set to begining of first day of data
+                # start timedate is set to beginning of first day of data
                 self.startTD = datetime.datetime(year=dt.year,
                                                  month=dt.month,
                                                  day=dt.day)
@@ -534,4 +534,3 @@ class Downsampler():
 
 if __name__ == '__main__':
     main()
-
